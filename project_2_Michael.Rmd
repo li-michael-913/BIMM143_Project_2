@@ -1,0 +1,139 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+# Introduction
+Scientific Question: 
+
+
+```{r}
+# Importing all necessary libraries
+library(seqinr)
+library(Biostrings)
+library(annotate)
+library(ggplot2)
+library(pheatmap)
+library(dplyr)
+library(readxl)
+```
+
+## Sequence alignment of various pandemic and seasonal strains of H1N1 and H3N2
+
+```{r}
+h1n1_ca2009 <- read.fasta("A_California_04_2009.fasta")
+h1n1_ussr1977 <-read.fasta("A_USSR_90_1977.fasta")
+h1n1_al2020 <- read.fasta("A_Alabama_01_2020.fasta")
+h1n1_pr1934 <- read.fasta("A_PR_8_1934.fasta")
+h3n2_hk1968 <- read.fasta("A_HK_1-1-MA-12_1968.fasta")
+h3n2_de2020 <- read.fasta("A_Delaware_05_2020.fasta")
+
+all_strains <- list(h1n1_ca2009, h1n1_ussr1977, h1n1_al2020, h1n1_pr1934, h3n2_hk1968, h3n2_de2020)
+
+all_segs<-list()
+num_samples<-6
+num_prot <- 10
+for(i in 1:num_samples){
+  all_segs$pb2[i] <- all_strains[[i]][1]
+  all_segs$pb1[i] <- all_strains[[i]][2]
+  all_segs$pa[i] <- all_strains[[i]][3]
+  all_segs$ha[i] <- all_strains[[i]][4]
+  all_segs$np[i] <- all_strains[[i]][5]
+  all_segs$na[i] <- all_strains[[i]][6]
+  all_segs$m1[i] <- all_strains[[i]][7]
+  all_segs$m2[i] <- all_strains[[i]][8]
+  all_segs$ns1[i] <- all_strains[[i]][9]
+  all_segs$ns2[i] <- all_strains[[i]][10]
+}
+protein_names <- c("PB2", "PB1", "PA", "HA", "NP", "NA", "M1", "M2", "NS1", "NS2")
+labels <- c("h1n1_P_ca2009", "h1n1_P_ussr1977", "h1n1_S_al2020", "h1n1_S_pr1934", "h3n2_P_hk1968", "h3n2_S_de2020")
+
+for(i in 1:num_prot){
+  names(all_segs[[i]]) <- labels
+}
+```
+
+```{r}
+scores <- list(pb2 = matrix(nrow = num_samples, ncol = num_samples), pb1 = matrix(nrow = num_samples, ncol = num_samples), pa = matrix(nrow = num_samples, ncol = num_samples), ha = matrix(nrow = num_samples, ncol = num_samples), np = matrix(nrow = num_samples, ncol = num_samples), na = matrix(nrow = num_samples, ncol = num_samples), m1 = matrix(nrow = num_samples, ncol = num_samples), m2 = matrix(nrow = num_samples, ncol = num_samples), ns1 = matrix(nrow = num_samples, ncol = num_samples), ns2 = matrix(nrow = num_samples, ncol = num_samples))
+for (i in 1:num_prot){
+  for (j in 1:num_samples){
+    
+    prot1 <- paste(as.character(all_segs[[i]][[j]]),collapse='')
+    
+    for (k in 1:num_samples){
+      prot2 <- paste(as.character(all_segs[[i]][[k]]),collapse='')
+      scores[[i]][j,k] <- score(pairwiseAlignment(prot1, prot2))
+    }
+  }
+}
+```
+
+```{r}
+for (i in 1:num_prot){
+  heatmap(scores[[i]], main = protein_names[i], labRow = labels, labCol = labels, scale = "row", cexRow = 0.65, cexCol = 0.65)
+}
+```
+
+# RNAseq analysis of RPKM
+```{r}
+res_ca4 <- as.data.frame(read_excel("A549_CA01.xlsx", col_names = TRUE))
+res_pr8 <- as.data.frame(read_excel("A549_PR8.xlsx", col_names = TRUE))
+
+rownames(res_ca4) <- res_ca4[,11]
+res_ca4 <- res_ca4[,-8]
+res_ca4 <- res_ca4[,7:8]
+res_ca4 <- res_ca4[order(res_ca4$pvalue),]
+rownames(res_pr8) <- res_pr8[,11]
+res_pr8 <- res_pr8[,-8]
+res_pr8 <- res_pr8[,7:8]
+res_pr8 <- res_pr8[order(res_pr8$pvalue),]
+
+res_ca4_sig <- subset(res_ca4, res_ca4$pvalue < 0.05)
+res_pr8_sig <- subset(res_pr8, res_ca4$pvalue < 0.05)
+```
+
+```{r}
+sub_res_pr8 <- subset(res_pr8_sig, rownames(res_pr8_sig) %in% rownames(res_ca4_sig))
+sub_res_ca4 <- subset(res_ca4_sig, rownames(res_ca4_sig) %in% rownames(sub_res_pr8))
+combined_res <- data.frame(sub_res_ca4$`log2_Ratio(A549_CA01/A549_Control)`, sub_res_pr8$`log2_Ratio(A549_PR8/A549_Control)`, sub_res_ca4$pvalue, sub_res_pr8$pvalue)
+rownames(combined_res)<-rownames(sub_res_pr8)
+colnames(combined_res) <- c("CA01_infected", "PR8_infected", "CA01_pvalue", "PR8_pvalue")
+```
+
+
+```{r}
+sub_combined <- head(as.matrix(combined_res), n =10)
+pheatmap(sub_combined[,1:2],
+         cluster_rows = T, 
+         show_rownames = T, row.names = rownames(sub_combined[,1:2]), treeheight_row = 0, treeheight_col = 0)
+```
+
+```{r}
+
+combined_res$CA01_threshold <- combined_res$CA01_pvalue < 0.000000005
+combined_res$PR8_threshold <- combined_res$PR8_pvalue < 0.000000005
+ggplot(combined_res) + 
+        geom_point(aes(x = CA01_infected, y = -log10(CA01_pvalue), color = CA01_threshold)) + 
+        xlab("log2_Ratio(A549_PR8/A549_Control)") + 
+        ylab("-log10 p-value") + 
+        theme(legend.position = "none", 
+              plot.title = element_text(size = rel(1.5), hjust = 0.5), 
+              axis.title = element_text(size = rel(1.25)))
+
+ggplot(combined_res) + 
+        geom_point(aes(x = PR8_infected, y = -log10(PR8_pvalue), color = PR8_threshold)) + 
+        xlab("log2_Ratio(A549_PR8/A549_Control)") + 
+        ylab("-log10 p-value") + 
+        theme(legend.position = "none", 
+              plot.title = element_text(size = rel(1.5), hjust = 0.5), 
+              axis.title = element_text(size = rel(1.25)))
+```
+
+# Pathway analysis of significant results
+```{r}
+write.table(rownames(combined_res)[1:10], "sig_results_project_2.txt",col.names = FALSE, row.names = FALSE, quote = FALSE)
+```
+
+Analysis done at https://reactome.org/PathwayBrowser/#TOOL=AT
+
+Overall, the most significant changes in gene expression are genes related to various pathways within the interferon signaling pathway.
