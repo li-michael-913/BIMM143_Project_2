@@ -4,7 +4,14 @@ output: html_notebook
 ---
 
 # Introduction
-Scientific Question: 
+Scientific Question: What differences in the sequences of each segment of the segmented genome and expression of infected cells exist between the H1N1 from the 2009 Swine flu pandemic and non-pandemic H1N1 (specifically the strain A/Puerto Rico/8/1934) that may contribute to differences in transmission?
+
+This project will be looking at the differences between the genes in the 2009 H1N1 pandemic strain (primarily A/California/04/2009) and non-pandemic strains such as A/PR/8/34 (the two strains will be referred to as CA4 and PR8). H1N1 is an influenza A virus (IAV) of the orthomyxoviridae family. It is a segmented dsDNA virus with 8 segments, each coding for a different protein. Although segments generaly code for 1 protein each, some can code for different proteins using alternative splicing and alternative start codons. Different strains of IAVs are categorized based on their hemagglutinin and neuraminidase proteins (segments 4 and 6 respectively). In addition to looking at the different sequences of segments, this project will also be looking at the differences in host cell responses by looking at RNAseq data of infected cells' transcriptome.
+
+If there is a difference in gene sequences, transmission related differences will be seen in the hemagglutinin and neuraminidase genes, and if there is a difference in transcription of infected cells, we should see different levels of expression for immune system related genes.
+
+# Data
+Data for segment sequences was taken from NCBI found via fludb.org. The data for the transcription was from https://www.frontiersin.org/articles/10.3389/fmicb.2019.02344/full. Sequence data is analyzed through pairwise sequence alignment for each segment between various pandemic and seasonal strains. Transcription data is in the form of the results of differential expression analysis of RPKM data. The data is analyzed through a volcano plot and pathway analysis (two analysis to make up for the lack of RNAseq due to dataset issues; as allowed by Dr. Schiffer).
 
 
 ```{r}
