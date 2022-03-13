@@ -1,17 +1,26 @@
 ---
-title: "R Notebook"
+title: "Project 2D Michael Li"
 output: html_notebook
 ---
 
-# Introduction
-Scientific Question: What differences in the sequences of each segment of the segmented genome and expression of infected cells exist between the H1N1 from the 2009 Swine flu pandemic and non-pandemic H1N1 (specifically the strain A/Puerto Rico/8/1934) that may contribute to differences in transmission?
+# Introduction and Background
+Scientific Question: What differences in the sequences of each segment of the segmented genome and expression of infected cells exist between the H1N1 from the 2009 Swine flu pandemic and non-pandemic H1N1 (specifically the strain A/Puerto Rico/8/1934) that may contribute to differences in severity?
 
-This project will be looking at the differences between the genes in the 2009 H1N1 pandemic strain (primarily A/California/04/2009) and non-pandemic strains such as A/PR/8/34 (the two strains will be referred to as CA4 and PR8). H1N1 is an influenza A virus (IAV) of the orthomyxoviridae family. It is a segmented dsDNA virus with 8 segments, each coding for a different protein. Although segments generaly code for 1 protein each, some can code for different proteins using alternative splicing and alternative start codons. Different strains of IAVs are categorized based on their hemagglutinin and neuraminidase proteins (segments 4 and 6 respectively). In addition to looking at the different sequences of segments, this project will also be looking at the differences in host cell responses by looking at RNAseq data of infected cells' transcriptome.
+Hypothesis: If there is a difference in gene sequences, then severity related differences will be seen in the NS1 and NS2 sequences with pandemic strains having more closely correlated scores and seasonal strains having closely correlated scores, and if there is a difference in transcription of infected cells, then we should see different levels of expression for immune system related genes with pandemic strains inducing higher levels of expression of those genes.
 
-If there is a difference in gene sequences, then transmission related differences will be seen in the hemagglutinin and neuraminidase genes with pandemic strains having more closely correlated scores and seasonal strains having closely correlated scores, and if there is a difference in transcription of infected cells, then we should see different levels of expression for immune system related genes with pandemic strains inducing higher levels of expression of those genes.
+This project will be looking at the differences between the genes in pandemic strains of H1N1 and H3N2 (pH1N1 and pH3N2) and seasonal strains of H1N1 and H3N2 (sH1N1 and sH3N2). For pH1N1, we will be using sequences from A/California/04/2009 (CA04) and A/USSR/90/1977 (USSR90). For sH1N1, we will be using sequences from A/Alabama/01/2020 (AL90) and A/PR/8/1934 (PR8). For pH3N2, we will be using sequences from A/HK/1-1-MA-12/1968. For sH3N2, we will be using sequences from A/Delaware/05/2020 (DE05).
 
-# Background
+In addition to looking at the different sequences of segments, this project will also be looking at the differences in host cell responses by looking at RNAseq data of infected cells' transcriptome (comparing between PR8 infected cells and CA01 infected cells; CA01 is also from the 2009 H1N1 pandemic). The cells used in this experiment are A549 immortalized lung epithelial cells.
 
+H1N1 and H3N2 are influenza A viruses (IAV) of the orthomyxoviridae family. It is a segmented dsDNA virus with 8 segments, each coding for a different protein. Although segments generally code for 1 protein each, some can code for different proteins using alternative splicing and alternative start codons. Different strains of IAVs are categorized based on their hemagglutinin and neuraminidase proteins (segments 4 and 6 respectively). Segments 1 to 3 code for RNA polymerase subunits. Segment 5 codes for the nucleoprotein (capsid protein). Segment 7 codes for matrix proteins 1 and 2. Segment 8 codes for nonstructural proteins 1 and 2.
+
+## Previous Literature
+
+I hypothesize that we will see different levels of expression for immune system related genes because in previous literature about transcriptoem analysis of PR8 infected A549 cells found that infection leads to enriched immune signaling and cytokine production, especially IL-17A and other related molecules. It was also found that IL-17A facilitated viral infection and that IL-17A knockout mice exhibited less weight loss and lung immunopathology compared to wild type mice (Li 2019).
+
+In a previous study comparing pH1N1 to sH1N1 and sH3N2, it was found that there were variations in the NS1 protein of pH1N1 that allowed it to inhibit host gene expression (Clark 2017). Hence, the hypothesis that bot hpandemic strains of H1N1 and H3N2 will have similar NS1 sequences separate from the seasonal strains.
+
+Although my scientific question and hypothesis does not cover the structural protein (nucleoprotein), previous literature has established that pH1N1 has a different nucleoprotein that allows it to resist some interferon (IFN) induced degradation (Pagani 2018). This shows that for a strain to become a pandemic, it needs to undergo changes in various segments and parts of the viral life cycle. The data I am considering is only a small part of a multifaceted field.
 
 # Data
 Data for segment sequences was taken from NCBI found via fludb.org. The data for the transcription was from https://www.frontiersin.org/articles/10.3389/fmicb.2019.02344/full. Sequence data is analyzed through pairwise sequence alignment for each segment between various pandemic and seasonal strains. The scores are stored in a matrix and portrayed as a heatmap. Transcription data is in the form of the results of differential expression analysis of RPKM data. The data is analyzed through a volcano plot and pathway analysis (two analysis to make up for the lack of RNAseq due to dataset issues; as allowed by Dr. Schiffer).
@@ -217,8 +226,8 @@ rownames(ca01_up_pr8_down)
 # Prints out genes that are downregulated in CA01 infected A549 cells and are upregulated in PR8 infected A549 cells.
 rownames(ca01_down_pr8_up)
 ```
-### Analysis of heatmap
-  Here are the top 10 DEGs of CA01 infected cells along with the corresponding levels of expression in PR8 infected cells. Level of expression here is represented by the log2 ratio of infected RPKM/control RPKM. Of note are IFIT1 and PARP10. IFIT1 is the highest DEG in CA01 infected cells. OASL seems to be the DEG with the greatest difference in expression between the CA01 and PR8 infected A549 cells. I will go more in depth into IFIT1 and OASL in the overall analysis at the end.
+### DEG Heatmap Results
+  Here are the top 10 DEGs of CA01 infected cells along with the corresponding levels of expression in PR8 infected cells. Level of expression here is represented by the log2 ratio of infected RPKM/control RPKM. Of note are IFIT1 and PARP10. IFIT1 is the highest DEG in CA01 infected cells. OASL seems to be the DEG with the greatest difference in expression between the CA01 and PR8 infected A549 cells. I will go more in depth into IFIT1 and OASL in the overall analysis at the end. I orginally also wanted to see if there are any upregulated genes in CA01 infected cells that are downregulated in PR8 infected cells and vice versa and to create a heatmap. However, there is only one gene that is upregualted in CA01 ifnected cells and downregulated in PR8 infected cells, which is NPHS1 (codes for nephrin).
 
 ## Generating volcano plot
 ```{r}
@@ -241,9 +250,10 @@ ggplot(combined_res) +
               plot.title = element_text(size = rel(1.5), hjust = 0.5), 
               axis.title = element_text(size = rel(1.25)))
 ```
-### Analysis of volcano plots
-  Here in red are all the DEGs with p-value < 0.05. DEGs with p-value > 0.05 are shown in blue. As you can see all DEGs here are statistically significant. However, upon further examination, the dataset from the paper only includes statistically significant DEGs. However, analysis is still possible. Overall the main difference is that CA01 infected cells have one DEG that is much more downregulated. The line below shows the DEG, which is TNFAIP8L3.
+### Volcano plot results
+Here in red are all the DEGs with p-value < 0.05. DEGs with p-value > 0.05 are shown in blue. As you can see all DEGs here are statistically significant. However, upon further examination, the dataset from the paper only includes statistically significant DEGs. However, analysis is still possible. Overall the main difference is that CA01 infected cells have one DEG that is much more downregulated. The line below shows the DEG, which is TNFAIP8L3 (Tumor necrosis factor alpha induced protein 8-like 3. It acts as a lipid transfer protein. However, just oen gene is not enough to draw any conclusions.
 ```{r}
+# This line here was added in as a manual way to check which DEG is the most downregulated.
 combined_res[combined_res$CA01_infected < -5,]
 ```
 
@@ -323,6 +333,12 @@ displayPathView(foldchanges_pr8, "hsa05160", "pr8_up")
 # Here I look at the hsa04620 pathway, which is the Toll-like receptor pathway, as it is upregulated only in CA01 infected A549 cells.
 displayPathView(foldchanges_ca01, "hsa04620", "ca01_up")
 
+# Here I look at the hsa04622 pathway, which is the RIG-I-like receptor pathway, as it is upregulated only in CA01 infected A549 cells.
+displayPathView(foldchanges_ca01, "hsa04622", "ca01_up")
+
+# Here I look at the hsa04623 pathway, which is the cytosolic DNA sensor pathway, as it is upregulated only in CA01 infected A549 cells.
+displayPathView(foldchanges_ca01, "hsa04623", "ca01_up")
+
 # Here I look at the hsa04510 pathway, which is the focal adhesion pathway, as it is downregulated in both types of infections.
 displayPathView(foldchanges_ca01, "hsa04510", "ca01_down")
 
@@ -333,7 +349,7 @@ displayPathView(foldchanges_pr8, "hsa04512", "pr8_down")
 displayPathView(foldchanges_pr8, "hsa05200", "pr8_down")
 
 ```
-### Analysis of pathway analysis results
+### Pathway analysis results
 We see that CA01 infected cells uniquely showed up-regulation in Toll-like receptor signaling, RIG-I-like receptor signaling, and cystolic DNA-sensing pathway, in addition to sharing with PR8 infected cells the up-regulated pathways of Hepatitis C infection pathway and JAK-STAT signaling pathway. We also see that PR8 infected cells uniquely showed down-regulation in the ECM-receptor interaction pathway and pathways in cancer, in addition to sharing with CA01 infected cells the down-regulated pathway of focal adhesion.
 
 ## Overall analysis/discussion/conclusion of RNAseq data based on RPKM
@@ -342,13 +358,34 @@ IFIT1 stands for interferon-induced protein with tetratricopeptide repeats 1 and
 
 OASL stands for oligoadenylate synthetases-like protein and is induced by interferons. OASL is also mediated by the RIG-I pathway, which is a viral RNA sensor pathway (Zhu 2014). Like mentioned earlier, OASL is the most different DEG between CA01 and PR8 infected cells. Without further examination, there can be no way of determining the reason. However, one possibility could be that the 2009 pandemic strain of viruses lead to much a much higher number of viral progeny. This can lead to more copies of the genome being detected in the original host cell and more viruses infecting a single cell. Another possibility could be that the pandemic strain has an earlier and higher peak in transcription of positive strength RNA, meaning it is faster at infecting the cell and at manipulating host machinery.
 
-In terms of pathway analysis it is more useful to look at pathways that are only up or down regulated in one group.
-Upregulated in only CA01: TLR signaling pathway, RIG-I-like signaling pathway, and cytosolic DNA-sensing pathway.
-Downregulated in only PR8: ECM-receptor interaction pathway and pathways in cancer.
+In terms of pathway analysis it is more useful to just look at pathways that are only up or down regulated in one group.
+
+In pandemic strains, the Toll-like receptor (TLR) signaling pathway, RIG-I-like signaling pathway, and cytosolic DNA-sensing pathway are uniquely up-regulated. The TLR pathway leads to pro-inflammatory, chemotactic, antiviral, and T cell stimulation. like mentioned before, the RIG-I pathway senses ssRNA (it also senses dsRNA). Its downstream effects lead to activation of various JAK-STAT signaling pathways via interferons and inflammatory cytokines. It's interesting that the cytosoli DNA sensor pathway (which senses DNA in the cytosol as a sign of viral infection) is upregulated. However, this could be a false positive as there are many overlapping genes in this pathway and the previously mentioned pathways.
+
+In the seasonal strain (PR8), the ECM-receptor interaction pathway and cancer pathways are uniquely down-regulated. This pathway involves various integrins, which allow cells to bind to the extracellular matrix. This means that A549 (lung epithelial cells) cells are more motile when infected by the PR8 strain compared to cells infected by the CA01 strain and uninfected cells. At the same time, PR8 infected cells also experience down-regulation in various cancer related pathways like proliferation, evading apoptosis, and angiogenesis. This lower cell proliferation could lead to a slower rate of infection between cells as if an infected cell divides while housing a virus, it will have infected 2 cells for free.
+
+# Answering the Scientific Question and Discussion
+
+The scientific question posed at the beginning was: What differences in the sequences of each segment of the segmented genome and expression of infected cells exist between the H1N1 from the 2009 Swine flu pandemic and non-pandemic H1N1 (specifically the strain A/Puerto Rico/8/1934) that may contribute to differences in severity?
+
+Our hypothesis was: If there is a difference in gene sequences, then severity related differences will be seen in the NS1 and NS2 sequences with pandemic strains having more closely correlated scores and seasonal strains having closely correlated scores, and if there is a difference in transcription of infected cells, then we should see different levels of expression for immune system related genes with pandemic strains inducing higher levels of expression of those genes.
+
+In our sequence scores heatmap, we see a geographic correlation between most segment sequences of the CA4 pandemic strain and the Alabama seasonal strain from 2020. Interestingly enough the pandemic strains of the H3N2 virus in Hong Kong 1968 and of the H1N1 virus in USSR 1977 share relatively similar matrix proteins (M1 and M2) and non-structural proteins (NS1 and NS2). This shows that the matrix proteins and non-structural proteins could play a role in disease severity.
+
+Through the various analysis techniques applied to the RNAseq data set in the second part, we overall see CA01 infected cells having a higher expression of immune related genes and, by extension, more immune pathways being up-regulated. One unexpected result was that cell adhesion, proliferation, and survival was relatively down-regulated in the seasonal PR8 H1N1 infected cells. Like mentioned previously, this could lend to a lower disease severity as it slows the rate of infection between cells. It should also be noted that influenza A (H1N1, H3N2, etc.) are enveloped, so their release does not require the death of the host cell. This means that it is in their best interest for the host to not die.
+
+All of this together supports our hypothesis and adds more upon it. We confirmed the role of NS1 and NS2 in disease severity while finding M1 and M2 proteins to also be potential candidates in disease severity or transmission. We also found that in addition to confirming pandemic H1N1 infected cells have higher expression and up-regulation of immunity related genes and pathways, we found that seasonal H1N1 infected cells have lower cell adhesion, proliferation, and survival.
+
+Going forward there are a couple of interesting areas we can research.
+
 
 # References
 
 Clark, A. M., Nogales, A., Martinez-Sobrido, L., Topham, D. J., & DeDiego, M. L. (2017). Functional Evolution of Influenza Virus NS1 Protein in Currently Circulating Human 2009 Pandemic H1N1 Viruses. Journal of virology, 91(17), e00721-17. https://doi.org/10.1128/JVI.00721-17
+
+Li, Jing et al. Transcriptome Profiling Reveals Differential Effect of Interleukin-17A Upon Influenza Virus Infection in Human Cells. 2019 Frontiers in Microbiology. https://www.frontiersin.org/articles/10.3389/fmicb.2019.02344/full
+
+Pagani, Isabel et al. Mutations Conferring increased Sensitivity to Tripartite Motif 22 Restriction Accumulated Progressively in the Nucleoprotein of Seasonal Influenza A (H1N1) viruses between 1918 and 2009. 2018 American Society for Microbiology. DOI:10.1128/mSphere.00110-18
 
 Pinto, A. K., Williams, G. D., Szretter, K. J., White, J. P., Proença-Módena, J. L., Liu, G., Olejnik, J., Brien, J. D., Ebihara, H., Mühlberger, E., Amarasinghe, G., Diamond, M. S., &amp; Boon, A. C. (2015). Human and murine IFIT1 proteins do not restrict infection of negative-sense RNA viruses of the Orthomyxoviridae, Bunyaviridae, and Filoviridae families. Journal of Virology, 89(18), 9465–9476. https://doi.org/10.1128/jvi.00996-15 
 
