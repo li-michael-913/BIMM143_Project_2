@@ -376,8 +376,9 @@ Through the various analysis techniques applied to the RNAseq data set in the se
 
 All of this together supports our hypothesis and adds more upon it. We confirmed the role of NS1 and NS2 in disease severity while finding M1 and M2 proteins to also be potential candidates in disease severity or transmission. We also found that in addition to confirming pandemic H1N1 infected cells have higher expression and up-regulation of immunity related genes and pathways, we found that seasonal H1N1 infected cells have lower cell adhesion, proliferation, and survival.
 
-Going forward there are a couple of interesting areas we can research.
+There are some limitations of the data used in this project that would require further investigation to establish anything concrete. First, the sample size for the RNAseq data is n = 1 for each group (control and experimental groups each have a sample size of 1). For the sequence data, it would be better if we compared all known strains as we still see a lot of noise with this small sample size. This results in the data used being more suitable to study the specific strain and  their evolution rather than pandemic and seasonal strains as a whole.
 
+Going forward, it would be interesting to look into the role of matrix proteins in facilitating infection and disease severity. It would also be interesting to further confirm whether or nto seasonal H1N1 strains do lead to lower cell adhesion, proliferation, and survival. It would be reasonable to believe that cell death and tissue damage contributes to pathology, so it is interesting that this is down regulated in only the PR8 strain. Due to the limitation of sample size as mentioned previously, more research needs to be conducted.
 
 # References
 
